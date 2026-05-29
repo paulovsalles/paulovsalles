@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Um Quarto – 15 minutos por dia para virar a chave.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* === RESET & BASE === */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:#f4f7f6;color:#284754;min-height:100vh;font-size:16px}
+button{font-family:'Nunito',sans-serif;cursor:pointer;border:none;outline:none}
+input,select,textarea{font-family:'Nunito',sans-serif;outline:none}
+a{text-decoration:none;color:inherit}
+
+/* === CSS VARIABLES === */
+:root{
+  --verde:#23B8A6;
+  --verde-dark:#1a9a89;
+  --azul:#284754;
+  --azul-light:#3a6275;
+  --branco:#ffffff;
+  --cinza-claro:#f4f7f6;
+  --cinza-medio:#e8eded;
+  --cinza-texto:#6b8c9a;
+  --radius:16px;
+  --radius-sm:10px;
+  --shadow:0 2px 12px rgba(40,71,84,.08);
+}
+
+/* === TELAS === */
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+
+/* ============================
+   TELA INICIAL (LANDING)
+   ============================ */
+#screen-landing{background:#fff}
+
+.landing-hero{
+  background:linear-gradient(135deg,#284754 0%,#1e5f6e 100%);
+  color:#fff;
+  text-align:center;
+  padding:64px 24px 72px;
+  position:relative;
+  overflow:hidden;
+}
+.landing-hero::before{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:200px;height:200px;border-radius:50%;
+  background:rgba(35,184,166,.18);pointer-events:none;
+}
+.landing-hero::after{
+  content:'';position:absolute;bottom:-40px;left:-40px;
+  width:150px;height:150px;border-radius:50%;
+  background:rgba(35,184,166,.12);pointer-events:none;
+}
+.logo-mark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:72px;height:72px;border-radius:20px;
+  background:var(--verde);margin:0 auto 20px;
+  font-size:32px;font-weight:800;color:#fff;
+  box-shadow:0 4px 20px rgba(35,184,166,.4);
+}
+.landing-hero h1{font-size:clamp(28px,7vw,44px);font-weight:800;margin-bottom:12px}
+.landing-hero h1 span{color:var(--verde)}
+.landing-hero p{font-size:clamp(15px,4vw,18px);opacity:.85;margin-bottom:36px;max-width:380px;margin-left:auto;margin-right:auto}
+.btn-hero-group{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:var(--verde);color:#fff;padding:14px 32px;border-radius:50px;font-size:15px;font-weight:700;transition:all .2s;box-shadow:0 4px 16px rgba(35,184,166,.35)}
+.btn-primary:hover{background:var(--verde-dark);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.6);padding:12px 28px;border-radius:50px;font-size:15px;font-weight:700;transition:all .2s}
+.btn-outline:hover{background:rgba(255,255,255,.1);border-color:#fff}
+
+.features-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;padding:48px 24px;max-width:900px;margin:0 auto;
+}
+.feature-card{
+  background:#fff;border:1.5px solid var(--cinza-medio);
+  border-radius:var(--radius);padding:24px 20px;text-align:center;
+  transition:box-shadow .2s;
+}
+.feature-card:hover{box-shadow:var(--shadow)}
+.feature-icon{
+  width:52px;height:52px;border-radius:14px;
+  background:var(--cinza-claro);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 14px;font-size:24px;
+}
+.feature-card h3{font-size:15px;font-weight:700;color:var(--azul);margin-bottom:6px}
+.feature-card p{font-size:13px;color:var(--cinza-texto);line-height:1.5}
+
+.landing-footer{text-align:center;padding:24px;color:var(--cinza-texto);font-size:13px;border-top:1px solid var(--cinza-medio)}
+
+/* ============================
+   TELA AUTH (LOGIN/CADASTRO)
+   ============================ */
+#screen-auth{
+  background:var(--cinza-claro);
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
+}
+.auth-card{
+  background:#fff;border-radius:var(--radius);
+  padding:36px 28px;width:100%;max-width:400px;
+  box-shadow:var(--shadow);
+}
+.auth-card .logo-mark{width:52px;height:52px;font-size:22px;border-radius:14px;margin-bottom:8px}
+.auth-card h2{font-size:20px;font-weight:800;color:var(--azul);margin-bottom:4px}
+.auth-card .subtitle{font-size:13px;color:var(--cinza-texto);margin-bottom:24px}
+.auth-tabs{display:flex;gap:4px;background:var(--cinza-claro);border-radius:10px;padding:4px;margin-bottom:24px}
+.auth-tab{flex:1;padding:9px;border-radius:8px;font-size:14px;font-weight:600;color:var(--cinza-texto);background:transparent;transition:all .2s;text-align:center}
+.auth-tab.active{background:#fff;color:var(--verde);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:var(--azul);margin-bottom:6px}
+.form-group input{
+  width:100%;padding:12px 14px;border:1.5px solid var(--cinza-medio);
+  border-radius:var(--radius-sm);font-size:14px;color:var(--azul);
+  background:#fff;transition:border-color .2s;
+}
+.form-group input:focus{border-color:var(--verde)}
+.btn-full{width:100%;padding:14px;border-radius:50px;font-size:15px;font-weight:700;background:var(--verde);color:#fff;margin-top:8px;transition:all .2s}
+.btn-full:hover{background:var(--verde-dark)}
+.auth-link{text-align:center;margin-top:16px;font-size:13px;color:var(--cinza-texto)}
+.auth-link span{color:var(--verde);cursor:pointer;font-weight:600}
+
+/* ============================
+   APP (PAINEL LOGADO)
+   ============================ */
+#screen-app{display:none;flex-direction:column;min-height:100vh}
+#screen-app.active{display:flex}
+
+/* TOPBAR */
+.topbar{
+  background:#fff;border-bottom:1.5px solid var(--cinza-medio);
+  padding:14px 20px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.topbar-logo{display:flex;align-items:center;gap:8px}
+.topbar-logo .logo-mark{width:36px;height:36px;font-size:14px;border-radius:10px;margin:0}
+.topbar-logo span{font-size:17px;font-weight:800;color:var(--azul)}
+.btn-logout{background:var(--cinza-claro);color:var(--cinza-texto);padding:8px 14px;border-radius:50px;font-size:12px;font-weight:600;transition:all .2s}
+.btn-logout:hover{background:var(--cinza-medio)}
+
+/* NAV BOTTOM */
+.bottom-nav{
+  background:#fff;border-top:1.5px solid var(--cinza-medio);
+  display:flex;justify-content:space-around;align-items:center;
+  padding:8px 0 max(8px, env(safe-area-inset-bottom));
+  position:sticky;bottom:0;z-index:100;
+}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  font-size:10px;font-weight:600;color:var(--cinza-texto);
+  padding:6px 10px;border-radius:10px;transition:all .2s;background:transparent;
+  min-width:52px;
+}
+.nav-item.active{color:var(--verde)}
+.nav-item svg{width:20px;height:20px;stroke-width:2}
+
+/* CONTEÚDO DAS ABAS */
+.app-content{flex:1;padding:16px;max-width:640px;width:100%;margin:0 auto}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* CARDS GENÉRICOS */
+.card{background:#fff;border-radius:var(--radius);padding:20px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card-title{font-size:14px;font-weight:700;color:var(--cinza-texto);text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px}
+
+/* ============================
+   PAINEL
+   ============================ */
+.painel-saudacao{
+  background:linear-gradient(135deg,var(--azul),var(--azul-light));
+  color:#fff;border-radius:var(--radius);padding:24px 20px;margin-bottom:14px;
+}
+.painel-saudacao h2{font-size:22px;font-weight:800}
+.painel-saudacao p{font-size:13px;opacity:.8;margin-top:4px}
+.frase-motivacional{
+  background:var(--cinza-claro);border-left:4px solid var(--verde);
+  padding:14px 16px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  font-size:13px;font-weight:600;color:var(--azul-light);font-style:italic;margin-bottom:14px;
+}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.stat-card{
+  background:#fff;border-radius:var(--radius);padding:18px 16px;
+  box-shadow:var(--shadow);text-align:center;
+}
+.stat-num{font-size:28px;font-weight:800;color:var(--azul)}
+.stat-label{font-size:12px;color:var(--cinza-texto);font-weight:600;margin-top:2px}
+.stat-icon{font-size:22px;margin-bottom:4px}
+
+/* ============================
+   TIMER
+   ============================ */
+.timer-modes{display:flex;gap:8px;margin-bottom:20px}
+.mode-btn{
+  flex:1;padding:10px;border-radius:50px;font-size:13px;font-weight:700;
+  background:var(--cinza-claro);color:var(--cinza-texto);transition:all .2s;
+}
+.mode-btn.active{background:var(--verde);color:#fff;box-shadow:0 2px 10px rgba(35,184,166,.3)}
+.timer-display{
+  text-align:center;padding:32px 20px;
+}
+.timer-circle{
+  width:200px;height:200px;border-radius:50%;margin:0 auto 24px;
+  background:#fff;box-shadow:0 0 0 10px var(--cinza-medio), 0 4px 24px rgba(40,71,84,.1);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;
+}
+.timer-ring{
+  position:absolute;top:0;left:0;width:200px;height:200px;transform:rotate(-90deg);
+}
+.timer-ring circle{fill:none;stroke-width:8;stroke-linecap:round}
+.timer-ring .bg-ring{stroke:var(--cinza-medio)}
+.timer-ring .prog-ring{stroke:var(--verde);transition:stroke-dashoffset .5s ease}
+.timer-time{font-size:42px;font-weight:800;color:var(--azul);line-height:1;position:relative;z-index:1}
+.timer-mode-label{font-size:12px;color:var(--cinza-texto);font-weight:600;margin-top:4px;position:relative;z-index:1}
+.timer-buttons{display:flex;gap:12px;justify-content:center;margin-bottom:20px}
+.btn-timer{padding:14px 28px;border-radius:50px;font-size:14px;font-weight:700;transition:all .2s}
+.btn-start{background:var(--verde);color:#fff;box-shadow:0 3px 14px rgba(35,184,166,.35)}
+.btn-start:hover{background:var(--verde-dark);transform:translateY(-1px)}
+.btn-pause{background:var(--cinza-claro);color:var(--azul)}
+.btn-pause:hover{background:var(--cinza-medio)}
+.btn-reset{background:var(--cinza-claro);color:var(--cinza-texto)}
+.btn-reset:hover{background:var(--cinza-medio)}
+.timer-task-input{
+  background:var(--cinza-claro);border-radius:var(--radius);
+  padding:16px;margin-top:8px;
+}
+.timer-task-input label{font-size:13px;font-weight:700;color:var(--azul);display:block;margin-bottom:8px}
+.timer-task-input input{
+  width:100%;padding:10px 12px;border:1.5px solid var(--cinza-medio);
+  border-radius:var(--radius-sm);font-size:14px;background:#fff;
+}
+.timer-task-input input:focus{border-color:var(--verde)}
+
+/* ============================
+   TAREFAS
+   ============================ */
+.add-form{background:var(--cinza-claro);border-radius:var(--radius);padding:18px;margin-bottom:16px}
+.add-form h3{font-size:14px;font-weight:700;color:var(--azul);margin-bottom:12px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-field{margin-bottom:10px}
+.form-field label{display:block;font-size:12px;font-weight:600;color:var(--cinza-texto);margin-bottom:5px}
+.form-field input,.form-field select,.form-field textarea{
+  width:100%;padding:10px 12px;border:1.5px solid var(--cinza-medio);
+  border-radius:var(--radius-sm);font-size:13px;background:#fff;color:var(--azul);
+}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--verde)}
+.btn-add{background:var(--verde);color:#fff;padding:11px 20px;border-radius:50px;font-size:13px;font-weight:700;width:100%;transition:all .2s}
+.btn-add:hover{background:var(--verde-dark)}
+
+.tarefa-item{
+  display:flex;align-items:flex-start;gap:12px;padding:14px;
+  background:#fff;border-radius:var(--radius-sm);border:1.5px solid var(--cinza-medio);
+  margin-bottom:8px;transition:all .2s;
+}
+.tarefa-item.done{opacity:.6;border-color:var(--cinza-claro)}
+.tarefa-item.done .tarefa-nome{text-decoration:line-through;color:var(--cinza-texto)}
+.check-btn{
+  width:22px;height:22px;min-width:22px;border-radius:50%;
+  border:2px solid var(--cinza-medio);background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  margin-top:1px;transition:all .2s;
+}
+.check-btn.done{background:var(--verde);border-color:var(--verde)}
+.check-btn svg{width:12px;height:12px;stroke:#fff;display:none}
+.check-btn.done svg{display:block}
+.tarefa-info{flex:1;min-width:0}
+.tarefa-nome{font-size:14px;font-weight:600;color:var(--azul)}
+.tarefa-meta{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}
+.badge{
+  font-size:11px;font-weight:600;padding:2px 8px;border-radius:50px;
+  background:var(--cinza-claro);color:var(--cinza-texto);
+}
+.badge.materia{background:#e8f5f3;color:var(--verde-dark)}
+.badge.prazo{background:#fff3e8;color:#c8721a}
+.btn-del{background:none;color:var(--cinza-texto);font-size:18px;padding:2px 4px;line-height:1;transition:color .2s;align-self:flex-start}
+.btn-del:hover{color:#e84040}
+.empty-state{text-align:center;padding:32px;color:var(--cinza-texto);font-size:14px}
+.empty-state div{font-size:32px;margin-bottom:8px}
+
+/* ============================
+   AULAS
+   ============================ */
+.aula-item{
+  padding:14px;background:#fff;border-radius:var(--radius-sm);
+  border:1.5px solid var(--cinza-medio);margin-bottom:8px;
+}
+.aula-header{display:flex;justify-content:space-between;align-items:flex-start}
+.aula-materia{font-size:14px;font-weight:700;color:var(--azul)}
+.aula-dur{background:#e8f5f3;color:var(--verde-dark);font-size:12px;font-weight:700;padding:3px 10px;border-radius:50px}
+.aula-conteudo{font-size:13px;color:var(--cinza-texto);margin-top:6px;line-height:1.4}
+.aula-obs{font-size:12px;color:#a8bec8;margin-top:4px;font-style:italic}
+.aula-date{font-size:11px;color:var(--cinza-texto);margin-top:6px}
+
+/* ============================
+   HÁBITOS
+   ============================ */
+.habito-item{
+  display:flex;align-items:center;gap:12px;padding:14px;
+  background:#fff;border-radius:var(--radius-sm);border:1.5px solid var(--cinza-medio);
+  margin-bottom:8px;transition:all .2s;
+}
+.habito-item.done{border-color:#e8f5f3;background:#f4faf9}
+.habito-check{
+  width:26px;height:26px;min-width:26px;border-radius:8px;
+  border:2px solid var(--cinza-medio);background:#fff;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;cursor:pointer;
+}
+.habito-check.done{background:var(--verde);border-color:var(--verde)}
+.habito-check svg{width:14px;height:14px;stroke:#fff;display:none}
+.habito-check.done svg{display:block}
+.habito-nome{flex:1;font-size:14px;font-weight:600;color:var(--azul)}
+.habito-item.done .habito-nome{color:var(--verde-dark)}
+.habito-streak{font-size:12px;font-weight:700;color:var(--cinza-texto);background:var(--cinza-claro);padding:3px 8px;border-radius:50px}
+
+/* ============================
+   PROGRESSO
+   ============================ */
+.prog-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.prog-stat{background:#fff;border-radius:var(--radius);padding:20px 16px;box-shadow:var(--shadow);text-align:center}
+.prog-stat .num{font-size:32px;font-weight:800;color:var(--verde)}
+.prog-stat .label{font-size:12px;font-weight:600;color:var(--cinza-texto);margin-top:4px}
+
+.weekly-chart{margin-top:4px}
+.weekly-label{font-size:12px;font-weight:700;color:var(--cinza-texto);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.week-bars{display:flex;align-items:flex-end;gap:6px;height:80px}
+.day-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
+.day-bar-bg{flex:1;width:100%;background:var(--cinza-claro);border-radius:6px;position:relative;overflow:hidden}
+.day-bar-fill{position:absolute;bottom:0;left:0;right:0;background:var(--verde);border-radius:6px;transition:height .5s ease}
+.day-label{font-size:10px;font-weight:700;color:var(--cinza-texto)}
+
+.prog-bar-section{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.prog-bar-label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:8px}
+.prog-bar-track{height:10px;background:var(--cinza-claro);border-radius:50px;overflow:hidden;margin-bottom:14px}
+.prog-bar-fill{height:100%;background:var(--verde);border-radius:50px;transition:width .5s ease}
+
+/* ============================
+   MEDIA QUERIES DESKTOP
+   ============================ */
+@media(min-width:600px){
+  .stats-grid{grid-template-columns:repeat(4,1fr)}
+  .form-row{grid-template-columns:1fr 1fr 1fr}
+  .prog-stats{grid-template-columns:repeat(4,1fr)}
+  .app-content{padding:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- ===========================
+     TELA 1: LANDING
+     =========================== -->
+<div id="screen-landing" class="screen active">
+  <div class="landing-hero">
+    <div class="logo-mark">¼</div>
+    <h1>Um <span>Quarto</span></h1>
+    <p>15 minutos por dia para virar a chave.</p>
+    <div class="btn-hero-group">
+      <button class="btn-primary" onclick="showScreen('auth','login')">Entrar</button>
+      <button class="btn-outline" onclick="showScreen('auth','register')">Criar conta</button>
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⏱️</div>
+      <h3>Foco Total</h3>
+      <p>Timer de 15 minutos (Um Quarto) e Pomodoro para manter o ritmo de estudos.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✅</div>
+      <h3>Tarefas</h3>
+      <p>Organize o que precisa fazer por matéria, defina prazos e acompanhe o progresso.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📚</div>
+      <h3>Aulas</h3>
+      <p>Registre cada aula estudada com conteúdo, duração e observações pessoais.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌱</div>
+      <h3>Evolução Pessoal</h3>
+      <p>Crie e acompanhe hábitos diários. Pequenas ações que constroem grandes resultados.</p>
+    </div>
+  </div>
+
+  <div class="landing-footer">
+    &copy; 2026 Um Quarto · Feito para quem quer crescer 15 minutos por vez.
+  </div>
+</div>
+
+<!-- ===========================
+     TELA 2: AUTH
+     =========================== -->
+<div id="screen-auth" class="screen">
+  <div class="auth-card">
+    <div class="logo-mark">¼</div>
+    <h2 id="auth-title">Bem-vindo de volta!</h2>
+    <p class="subtitle" id="auth-subtitle">Entre na sua conta para continuar.</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Entrar</button>
+      <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Criar conta</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="form-login">
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="login-email" placeholder="seu@email.com">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="login-pass" placeholder="••••••••">
+      </div>
+      <button class="btn-full" onclick="doLogin()">Entrar →</button>
+      <p class="auth-link">Não tem conta? <span onclick="switchAuthTab('register')">Criar agora</span></p>
+    </div>
+
+    <!-- CADASTRO -->
+    <div id="form-register" style="display:none">
+      <div class="form-group">
+        <label>Seu nome</label>
+        <input type="text" id="reg-name" placeholder="Como quer ser chamado?">
+      </div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="reg-email" placeholder="seu@email.com">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres">
+      </div>
+      <button class="btn-full" onclick="doRegister()">Criar conta →</button>
+      <p class="auth-link">Já tem conta? <span onclick="switchAuthTab('login')">Entrar</span></p>
+    </div>
+
+    <p id="auth-error" style="color:#e84040;font-size:13px;text-align:center;margin-top:12px;display:none"></p>
+  </div>
+</div>
+
+<!-- ===========================
+     TELA 3: APP
+     =========================== -->
+<div id="screen-app" class="screen">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-mark">¼</div>
+      <span>Um Quarto</span>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">Sair</button>
+  </div>
+
+  <!-- CONTEÚDO -->
+  <div class="app-content">
+
+    <!-- PAINEL -->
+    <div id="tab-painel" class="tab-panel active">
+      <div class="painel-saudacao">
+        <h2 id="painel-nome">Olá, aluno! 👋</h2>
+        <p id="painel-data">Hoje é um ótimo dia para aprender.</p>
+      </div>
+      <div class="frase-motivacional" id="frase-mot"></div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">⏱️</div>
+          <div class="stat-num" id="stat-mins">0</div>
+          <div class="stat-label">min estudados hoje</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📌</div>
+          <div class="stat-num" id="stat-pending">0</div>
+          <div class="stat-label">tarefas pendentes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📚</div>
+          <div class="stat-num" id="stat-aulas">0</div>
+          <div class="stat-label">aulas registradas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-num" id="stat-streak">0</div>
+          <div class="stat-label">dias seguidos</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Tarefas de hoje</div>
+        <div id="painel-tarefas"></div>
+      </div>
+    </div>
+
+    <!-- TIMER -->
+    <div id="tab-timer" class="tab-panel">
+      <div class="card">
+        <div class="timer-modes">
+          <button class="mode-btn active" id="mode-quarto" onclick="setMode('quarto')">Um Quarto (15min)</button>
+          <button class="mode-btn" id="mode-pomo" onclick="setMode('pomo')">Pomodoro (25min)</button>
+          <button class="mode-btn" id="mode-pausa" onclick="setMode('pausa')">Pausa (5min)</button>
+        </div>
+        <div class="timer-display">
+          <div class="timer-circle">
+            <svg class="timer-ring" viewBox="0 0 200 200">
+              <circle class="bg-ring" cx="100" cy="100" r="86"/>
+              <circle class="prog-ring" id="timer-prog" cx="100" cy="100" r="86"/>
+            </svg>
+            <div class="timer-time" id="timer-display">15:00</div>
+            <div class="timer-mode-label" id="timer-label">Um Quarto</div>
+          </div>
+          <div class="timer-buttons">
+            <button class="btn-timer btn-start" id="btn-start" onclick="startTimer()">▶ Iniciar</button>
+            <button class="btn-timer btn-pause" id="btn-pause" onclick="pauseTimer()" style="display:none">⏸ Pausar</button>
+            <button class="btn-timer btn-reset" onclick="resetTimer()">↺ Reset</button>
+          </div>
+        </div>
+        <div class="timer-task-input">
+          <label>🎯 O que você vai focar agora?</label>
+          <input type="text" id="timer-task" placeholder="Ex: Resolver exercícios de física...">
+        </div>
+      </div>
+    </div>
+
+    <!-- TAREFAS -->
+    <div id="tab-tarefas" class="tab-panel">
+      <div class="add-form">
+        <h3>+ Nova tarefa</h3>
+        <div class="form-field">
+          <label>Tarefa</label>
+          <input type="text" id="t-nome" placeholder="O que precisa fazer?">
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Matéria</label>
+            <input type="text" id="t-materia" placeholder="Ex: Matemática">
+          </div>
+          <div class="form-field">
+            <label>Prazo</label>
+            <input type="date" id="t-prazo">
+          </div>
+        </div>
+        <button class="btn-add" onclick="addTarefa()">Adicionar tarefa</button>
+      </div>
+      <div id="lista-tarefas">
+        <div class="empty-state"><div>✅</div>Nenhuma tarefa ainda. Adicione a primeira!</div>
+      </div>
+    </div>
+
+    <!-- AULAS -->
+    <div id="tab-aulas" class="tab-panel">
+      <div class="add-form">
+        <h3>+ Registrar aula</h3>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Matéria</label>
+            <input type="text" id="a-materia" placeholder="Ex: Biologia">
+          </div>
+          <div class="form-field">
+            <label>Data</label>
+            <input type="date" id="a-data">
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Duração (minutos)</label>
+          <input type="number" id="a-dur" placeholder="Ex: 30" min="1">
+        </div>
+        <div class="form-field">
+          <label>Conteúdo estudado</label>
+          <input type="text" id="a-conteudo" placeholder="Ex: Fotossíntese e respiração celular">
+        </div>
+        <div class="form-field">
+          <label>Observações</label>
+          <input type="text" id="a-obs" placeholder="Dúvidas, pontos importantes... (opcional)">
+        </div>
+        <button class="btn-add" onclick="addAula()">Registrar aula</button>
+      </div>
+      <div id="lista-aulas">
+        <div class="empty-state"><div>📚</div>Nenhuma aula registrada ainda.</div>
+      </div>
+    </div>
+
+    <!-- HÁBITOS -->
+    <div id="tab-habitos" class="tab-panel">
+      <div class="add-form">
+        <h3>+ Novo hábito</h3>
+        <div class="form-field">
+          <label>Nome do hábito</label>
+          <input type="text" id="h-nome" placeholder="Ex: Ler 15 minutos, Revisar anotações...">
+        </div>
+        <button class="btn-add" onclick="addHabito()">Criar hábito</button>
+      </div>
+      <p style="font-size:12px;color:var(--cinza-texto);margin-bottom:12px;font-weight:600">Marque os hábitos que já fez hoje:</p>
+      <div id="lista-habitos">
+        <div class="empty-state"><div>🌱</div>Crie seus primeiros hábitos!</div>
+      </div>
+    </div>
+
+    <!-- PROGRESSO -->
+    <div id="tab-progresso" class="tab-panel">
+      <div class="prog-stats">
+        <div class="prog-stat">
+          <div class="num" id="prog-mins">0</div>
+          <div class="label">min totais</div>
+        </div>
+        <div class="prog-stat">
+          <div class="num" id="prog-tarefas">0</div>
+          <div class="label">tarefas concluídas</div>
+        </div>
+        <div class="prog-stat">
+          <div class="num" id="prog-aulas">0</div>
+          <div class="label">aulas registradas</div>
+        </div>
+        <div class="prog-stat">
+          <div class="num" id="prog-habitos">0</div>
+          <div class="label">hábitos hoje</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="weekly-label">Minutos estudados esta semana</div>
+        <div class="week-bars" id="week-bars"></div>
+        <div id="week-days-labels" style="display:flex;gap:6px;margin-top:4px"></div>
+      </div>
+
+      <div class="prog-bar-section">
+        <div class="card-title">Metas semanais</div>
+        <div class="prog-bar-label"><span>⏱️ Tempo (meta: 300 min)</span><span id="pb-mins-val">0%</span></div>
+        <div class="prog-bar-track"><div class="prog-bar-fill" id="pb-mins"></div></div>
+        <div class="prog-bar-label"><span>✅ Tarefas (meta: 10)</span><span id="pb-tar-val">0%</span></div>
+        <div class="prog-bar-track"><div class="prog-bar-fill" id="pb-tar"></div></div>
+        <div class="prog-bar-label"><span>📚 Aulas (meta: 7)</span><span id="pb-aul-val">0%</span></div>
+        <div class="prog-bar-track"><div class="prog-bar-fill" id="pb-aul"></div></div>
+        <div class="prog-bar-label"><span>🌱 Hábitos hoje (meta: 5)</span><span id="pb-hab-val">0%</span></div>
+        <div class="prog-bar-track"><div class="prog-bar-fill" id="pb-hab"></div></div>
+      </div>
+    </div>
+
+  </div><!-- /app-content -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-painel" onclick="switchTab('painel')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Painel
+    </button>
+    <button class="nav-item" id="nav-timer" onclick="switchTab('timer')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="13" r="7"/><path d="M12 10v3l2 2"/><path d="M9 2h6"/><path d="M12 2v4"/></svg>
+      Timer
+    </button>
+    <button class="nav-item" id="nav-tarefas" onclick="switchTab('tarefas')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Tarefas
+    </button>
+    <button class="nav-item" id="nav-aulas" onclick="switchTab('aulas')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      Aulas
+    </button>
+    <button class="nav-item" id="nav-habitos" onclick="switchTab('habitos')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg>
+      Hábitos
+    </button>
+    <button class="nav-item" id="nav-progresso" onclick="switchTab('progresso')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Progresso
+    </button>
+  </nav>
+
+</div><!-- /screen-app -->
+
+<script>
+// ===================================
+// UTILITÁRIOS
+// ===================================
+const ls = {
+  get:(k,d)=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d}catch{return d}},
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+};
+const today = ()=>new Date().toISOString().slice(0,10);
+const frases = [
+  '"O segredo do sucesso é a constância." – Benjamin Disraeli',
+  '"Comece onde você está. Use o que você tem. Faça o que você pode."',
+  '"15 minutos por dia valem mais que uma hora na semana."',
+  '"A disciplina é a ponte entre metas e realizações."',
+  '"Cada quartinho de hora conta. Você está no caminho certo! 🌱"',
+  '"Pequenos progressos diários levam a grandes resultados."',
+  '"Foco no processo, e os resultados vêm naturalmente."'
+];
+
+// ===================================
+// NAVEGAÇÃO ENTRE TELAS
+// ===================================
+let currentUser = null;
+
+function showScreen(name, sub=''){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el = document.getElementById('screen-'+name);
+  el.classList.add('active');
+  if(name==='auth'&&sub) switchAuthTab(sub);
+  if(name==='app') initApp();
+}
+
+function switchAuthTab(tab){
+  document.getElementById('form-login').style.display = tab==='login'?'block':'none';
+  document.getElementById('form-register').style.display = tab==='register'?'block':'none';
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+  document.getElementById('auth-title').textContent = tab==='login'?'Bem-vindo de volta!':'Criar sua conta';
+  document.getElementById('auth-subtitle').textContent = tab==='login'?'Entre para continuar estudando.':'Comece sua jornada agora.';
+  document.getElementById('auth-error').style.display='none';
+}
+
+function showError(msg){
+  const el = document.getElementById('auth-error');
+  el.textContent=msg; el.style.display='block';
+}
+
+// ===================================
+// AUTH
+// ===================================
+function doRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  if(!name){showError('Digite seu nome.');return}
+  if(!email||!email.includes('@')){showError('E-mail inválido.');return}
+  if(pass.length<6){showError('Senha: mínimo 6 caracteres.');return}
+  let users=ls.get('uq_users',{});
+  if(users[email]){showError('E-mail já cadastrado.');return}
+  users[email]={name,pass};
+  ls.set('uq_users',users);
+  currentUser={email,name};
+  ls.set('uq_session',currentUser);
+  showScreen('app');
+}
+
+function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  if(!email){showError('Digite o e-mail.');return}
+  if(!pass){showError('Digite a senha.');return}
+  let users=ls.get('uq_users',{});
+  if(!users[email]||users[email].pass!==pass){showError('E-mail ou senha incorretos.');return}
+  currentUser={email,name:users[email].name};
+  ls.set('uq_session',currentUser);
+  showScreen('app');
+}
+
+function doLogout(){
+  ls.set('uq_session',null);
+  currentUser=null;
+  resetTimer();
+  showScreen('landing');
+}
+
+// ===================================
+// INIT APP
+// ===================================
+function initApp(){
+  const s=ls.get('uq_session',null);
+  if(s) currentUser=s;
+  if(!currentUser){showScreen('landing');return}
+  const dias=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  const d=new Date();
+  document.getElementById('painel-nome').textContent=`Olá, ${currentUser.name}! 👋`;
+  document.getElementById('painel-data').textContent=`${dias[d.getDay()]}, ${d.getDate()} de ${meses[d.getMonth()]}`;
+  document.getElementById('frase-mot').textContent=frases[Math.floor(Math.random()*frases.length)];
+  renderTarefas(); renderAulas(); renderHabitos(); updateStats(); updateProgresso();
+  checkStreak();
+}
+
+// ===================================
+// TABS
+// ===================================
+function switchTab(tab){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('nav-'+tab).classList.add('active');
+  if(tab==='progresso') updateProgresso();
+  if(tab==='painel'){updateStats();renderPainelTarefas();}
+}
+
+// ===================================
+// TIMER
+// ===================================
+const MODES={quarto:{sec:900,label:'Um Quarto'},pomo:{sec:1500,label:'Pomodoro'},pausa:{sec:300,label:'Pausa'}};
+let timerMode='quarto', timerTotal=900, timerLeft=900, timerRunning=false, timerInterval=null;
+const CIRC=2*Math.PI*86;
+document.getElementById('timer-prog').style.strokeDasharray=CIRC;
+document.getElementById('timer-prog').style.strokeDashoffset=0;
+
+function setMode(m){
+  if(timerRunning) return;
+  timerMode=m;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('mode-'+m).classList.add('active');
+  timerTotal=MODES[m].sec; timerLeft=timerTotal;
+  document.getElementById('timer-label').textContent=MODES[m].label;
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay(){
+  const m=Math.floor(timerLeft/60), s=timerLeft%60;
+  document.getElementById('timer-display').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  const prog=1-(timerLeft/timerTotal);
+  document.getElementById('timer-prog').style.strokeDashoffset=CIRC*(1-prog);
+}
+
+function startTimer(){
+  if(timerRunning) return;
+  timerRunning=true;
+  document.getElementById('btn-start').style.display='none';
+  document.getElementById('btn-pause').style.display='inline-block';
+  timerInterval=setInterval(()=>{
+    timerLeft--;
+    updateTimerDisplay();
+    if(timerLeft<=0){
+      clearInterval(timerInterval); timerRunning=false;
+      document.getElementById('btn-start').style.display='inline-block';
+      document.getElementById('btn-pause').style.display='none';
+      // registrar minutos
+      if(timerMode!=='pausa'){
+        const mins=Math.round(timerTotal/60);
+        const key='uq_mins_'+today();
+        ls.set(key,(ls.get(key,0)+mins));
+        updateStats();
+      }
+      // pequena notificação sonora via AudioContext
+      try{
+        const ctx=new(window.AudioContext||window.webkitAudioContext)();
+        const osc=ctx.createOscillator(); const g=ctx.createGain();
+        osc.connect(g); g.connect(ctx.destination);
+        osc.frequency.value=880; g.gain.setValueAtTime(0.3,ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.8);
+        osc.start(); osc.stop(ctx.currentTime+0.8);
+      }catch(e){}
+    }
+  },1000);
+}
+
+function pauseTimer(){
+  if(!timerRunning) return;
+  clearInterval(timerInterval); timerRunning=false;
+  document.getElementById('btn-start').style.display='inline-block';
+  document.getElementById('btn-pause').style.display='none';
+}
+
+function resetTimer(){
+  pauseTimer();
+  timerLeft=timerTotal;
+  updateTimerDisplay();
+}
+
+// ===================================
+// TAREFAS
+// ===================================
+function getTarefas(){return ls.get('uq_tarefas_'+currentUser?.email,[])}
+function saveTarefas(t){ls.set('uq_tarefas_'+currentUser?.email,t)}
+
+function addTarefa(){
+  const nome=document.getElementById('t-nome').value.trim();
+  if(!nome){alert('Digite o nome da tarefa.');return}
+  const t=getTarefas();
+  t.unshift({id:Date.now(),nome,materia:document.getElementById('t-materia').value.trim(),prazo:document.getElementById('t-prazo').value,done:false,createdAt:today()});
+  saveTarefas(t);
+  document.getElementById('t-nome').value='';
+  document.getElementById('t-materia').value='';
+  document.getElementById('t-prazo').value='';
+  renderTarefas(); updateStats();
+}
+
+function toggleTarefa(id){
+  const t=getTarefas();
+  const i=t.findIndex(x=>x.id===id);
+  if(i>-1){t[i].done=!t[i].done; saveTarefas(t); renderTarefas(); updateStats();}
+}
+
+function delTarefa(id){
+  saveTarefas(getTarefas().filter(x=>x.id!==id));
+  renderTarefas(); updateStats();
+}
+
+function renderTarefas(){
+  const t=getTarefas();
+  const el=document.getElementById('lista-tarefas');
+  if(!t.length){el.innerHTML='<div class="empty-state"><div>✅</div>Nenhuma tarefa ainda. Adicione a primeira!</div>';return}
+  el.innerHTML=t.map(x=>`
+    <div class="tarefa-item ${x.done?'done':''}">
+      <button class="check-btn ${x.done?'done':''}" onclick="toggleTarefa(${x.id})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      </button>
+      <div class="tarefa-info">
+        <div class="tarefa-nome">${x.nome}</div>
+        <div class="tarefa-meta">
+          ${x.materia?`<span class="badge materia">📌 ${x.materia}</span>`:''}
+          ${x.prazo?`<span class="badge prazo">📅 ${formatDate(x.prazo)}</span>`:''}
+        </div>
+      </div>
+      <button class="btn-del" onclick="delTarefa(${x.id})" title="Excluir">×</button>
+    </div>`).join('');
+}
+
+function renderPainelTarefas(){
+  const t=getTarefas().filter(x=>!x.done).slice(0,4);
+  const el=document.getElementById('painel-tarefas');
+  if(!t.length){el.innerHTML='<p style="color:var(--cinza-texto);font-size:13px">Nenhuma tarefa pendente. 🎉</p>';return}
+  el.innerHTML=t.map(x=>`
+    <div class="tarefa-item">
+      <button class="check-btn" onclick="toggleTarefa(${x.id}); renderPainelTarefas(); updateStats()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      </button>
+      <div class="tarefa-info">
+        <div class="tarefa-nome">${x.nome}</div>
+        <div class="tarefa-meta">${x.materia?`<span class="badge materia">${x.materia}</span>`:''}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ===================================
+// AULAS
+// ===================================
+function getAulas(){return ls.get('uq_aulas_'+currentUser?.email,[])}
+function saveAulas(a){ls.set('uq_aulas_'+currentUser?.email,a)}
+
+function addAula(){
+  const mat=document.getElementById('a-materia').value.trim();
+  const dur=parseInt(document.getElementById('a-dur').value);
+  const cont=document.getElementById('a-conteudo').value.trim();
+  if(!mat||!dur||!cont){alert('Preencha matéria, duração e conteúdo.');return}
+  const a=getAulas();
+  a.unshift({id:Date.now(),materia:mat,data:document.getElementById('a-data').value||today(),dur,conteudo:cont,obs:document.getElementById('a-obs').value.trim()});
+  saveAulas(a);
+  ['a-materia','a-data','a-dur','a-conteudo','a-obs'].forEach(id=>document.getElementById(id).value='');
+  renderAulas(); updateStats();
+}
+
+function delAula(id){
+  saveAulas(getAulas().filter(x=>x.id!==id));
+  renderAulas(); updateStats();
+}
+
+function renderAulas(){
+  const a=getAulas();
+  const el=document.getElementById('lista-aulas');
+  if(!a.length){el.innerHTML='<div class="empty-state"><div>📚</div>Nenhuma aula registrada ainda.</div>';return}
+  el.innerHTML=a.map(x=>`
+    <div class="aula-item">
+      <div class="aula-header">
+        <div class="aula-materia">📚 ${x.materia}</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="aula-dur">⏱ ${x.dur} min</span>
+          <button class="btn-del" onclick="delAula(${x.id})">×</button>
+        </div>
+      </div>
+      <div class="aula-conteudo">${x.conteudo}</div>
+      ${x.obs?`<div class="aula-obs">💬 ${x.obs}</div>`:''}
+      <div class="aula-date">📅 ${formatDate(x.data)}</div>
+    </div>`).join('');
+}
+
+// ===================================
+// HÁBITOS
+// ===================================
+function getHabitos(){return ls.get('uq_habitos_'+currentUser?.email,[])}
+function saveHabitos(h){ls.set('uq_habitos_'+currentUser?.email,h)}
+
+function addHabito(){
+  const nome=document.getElementById('h-nome').value.trim();
+  if(!nome){alert('Digite o nome do hábito.');return}
+  const h=getHabitos();
+  h.push({id:Date.now(),nome,checks:{}});
+  saveHabitos(h);
+  document.getElementById('h-nome').value='';
+  renderHabitos();
+}
+
+function toggleHabito(id){
+  const h=getHabitos();
+  const i=h.findIndex(x=>x.id===id);
+  if(i>-1){
+    const d=today();
+    h[i].checks[d]=!h[i].checks[d];
+    saveHabitos(h); renderHabitos(); updateStats();
+  }
+}
+
+function delHabito(id){
+  saveHabitos(getHabitos().filter(x=>x.id!==id));
+  renderHabitos();
+}
+
+function renderHabitos(){
+  const h=getHabitos();
+  const el=document.getElementById('lista-habitos');
+  if(!h.length){el.innerHTML='<div class="empty-state"><div>🌱</div>Crie seus primeiros hábitos!</div>';return}
+  const d=today();
+  el.innerHTML=h.map(x=>{
+    const done=x.checks[d]||false;
+    const streak=calcStreak(x.checks);
+    return `
+    <div class="habito-item ${done?'done':''}">
+      <div class="habito-check ${done?'done':''}" onclick="toggleHabito(${x.id})">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="habito-nome">${x.nome}</div>
+      ${streak>0?`<span class="habito-streak">🔥 ${streak}</span>`:''}
+      <button class="btn-del" onclick="delHabito(${x.id})">×</button>
+    </div>`;
+  }).join('');
+}
+
+function calcStreak(checks){
+  let streak=0, d=new Date();
+  while(true){
+    const k=d.toISOString().slice(0,10);
+    if(checks[k]){streak++; d.setDate(d.getDate()-1);}
+    else break;
+  }
+  return streak;
+}
+
+// ===================================
+// STATS & PROGRESSO
+// ===================================
+function updateStats(){
+  const mins=ls.get('uq_mins_'+today(),0);
+  const tarefas=getTarefas();
+  const aulas=getAulas();
+  const habitos=getHabitos().filter(h=>h.checks[today()]).length;
+  document.getElementById('stat-mins').textContent=mins;
+  document.getElementById('stat-pending').textContent=tarefas.filter(t=>!t.done).length;
+  document.getElementById('stat-aulas').textContent=aulas.length;
+  renderPainelTarefas();
+}
+
+function checkStreak(){
+  let streak=0, d=new Date();
+  while(true){
+    const k=d.toISOString().slice(0,10);
+    if(ls.get('uq_mins_'+k,0)>0){streak++; d.setDate(d.getDate()-1);}
+    else break;
+  }
+  document.getElementById('stat-streak').textContent=streak;
+}
+
+function updateProgresso(){
+  const tarefas=getTarefas();
+  const aulas=getAulas();
+  const habitos=getHabitos();
+  const hojeDone=habitos.filter(h=>h.checks[today()]).length;
+
+  // total de minutos (todos os dias)
+  let totalMins=0;
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.startsWith('uq_mins_')) totalMins+=ls.get(k,0);
+  }
+  const tarDone=tarefas.filter(t=>t.done).length;
+
+  document.getElementById('prog-mins').textContent=totalMins;
+  document.getElementById('prog-tarefas').textContent=tarDone;
+  document.getElementById('prog-aulas').textContent=aulas.length;
+  document.getElementById('prog-habitos').textContent=hojeDone;
+
+  // barras de progresso
+  const setBar=(id,valId,val,max)=>{
+    const pct=Math.min(100,Math.round(val/max*100));
+    document.getElementById(id).style.width=pct+'%';
+    document.getElementById(valId).textContent=pct+'%';
+  };
+
+  // minutos desta semana
+  let weekMins=0;
+  const weekDays=[]; const weekLabels=['D','S','T','Q','Q','S','S'];
+  for(let i=6;i>=0;i--){
+    const dt=new Date(); dt.setDate(dt.getDate()-i);
+    const k='uq_mins_'+dt.toISOString().slice(0,10);
+    const m=ls.get(k,0); weekMins+=m;
+    weekDays.push({m,label:weekLabels[dt.getDay()]});
+  }
+  setBar('pb-mins','pb-mins-val',weekMins,300);
+  setBar('pb-tar','pb-tar-val',tarDone,10);
+  setBar('pb-aul','pb-aul-val',aulas.length,7);
+  setBar('pb-hab','pb-hab-val',hojeDone,5);
+
+  // gráfico semanal
+  const maxM=Math.max(...weekDays.map(d=>d.m),1);
+  const barsEl=document.getElementById('week-bars');
+  const labsEl=document.getElementById('week-days-labels');
+  barsEl.innerHTML=weekDays.map(d=>`
+    <div class="day-bar-wrap">
+      <div class="day-bar-bg">
+        <div class="day-bar-fill" style="height:${Math.round(d.m/maxM*100)}%"></div>
+      </div>
+    </div>`).join('');
+  labsEl.innerHTML=weekDays.map((d,i)=>`
+    <div style="flex:1;text-align:center;font-size:10px;font-weight:700;color:var(--cinza-texto)">${d.label}</div>`).join('');
+}
+
+// ===================================
+// UTILITÁRIO DE DATA
+// ===================================
+function formatDate(str){
+  if(!str) return '';
+  const [y,m,d]=str.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+// ===================================
+// INICIALIZAÇÃO GLOBAL
+// ===================================
+document.addEventListener('DOMContentLoaded',()=>{
+  const s=ls.get('uq_session',null);
+  if(s&&s.email){currentUser=s; showScreen('app');}
+  // enter nos campos de auth
+  ['login-email','login-pass'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+  });
+  ['reg-name','reg-email','reg-pass'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('keydown',e=>{if(e.key==='Enter')doRegister()});
+  });
+});
+</script>
+</body>
+</html>
