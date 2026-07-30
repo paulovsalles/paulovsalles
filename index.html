@@ -398,6 +398,45 @@ body {
 }
 .cat-select option { background: var(--s1); }
 
+
+/* ORGANIZAÇÃO E DRAG & DROP */
+.expense-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; flex-wrap: wrap; margin-bottom: 16px;
+  padding: 10px 12px; background: var(--s1);
+  border: 1px solid var(--bd); border-radius: 12px;
+}
+.expense-toolbar-left,
+.expense-toolbar-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.sort-select {
+  background: var(--s2); color: var(--tx); border: 1px solid var(--bd2);
+  border-radius: 8px; padding: 7px 10px; font: 12px 'Inter', sans-serif;
+  outline: none; cursor: pointer;
+}
+.sort-select:focus { border-color: var(--tbd); }
+.drag-handle {
+  color: var(--di); cursor: grab; user-select: none;
+  font-size: 18px; line-height: 1; padding: 5px 2px;
+  flex-shrink: 0; transition: color .15s, transform .15s;
+}
+.expense-item:hover .drag-handle { color: var(--mu); }
+.drag-handle:active { cursor: grabbing; transform: scale(.95); }
+.expense-item.dragging { opacity: .38; border-color: var(--teal); }
+.expense-item.drag-over {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px rgba(45,212,191,.12);
+}
+.expense-item.drag-over-before::before,
+.expense-item.drag-over-after::after {
+  content: ''; position: absolute; left: 8px; right: 8px;
+  height: 2px; background: var(--teal); border-radius: 2px;
+}
+.expense-item.drag-over-before::before { top: -5px; }
+.expense-item.drag-over-after::after { bottom: -5px; }
+.expense-item { position: relative; }
+.manual-hint { font-size: 11px; color: var(--di); }
+.manual-hint strong { color: var(--teal); }
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .sidebar { width: 60px; }
@@ -554,6 +593,23 @@ body {
     <div class="section-eyebrow">passo 2</div>
     <div class="section-title">Quais são suas despesas?</div>
     <div class="section-desc">Adicione, edite ou remova cada gasto. Organize por categoria.</div>
+  </div>
+
+  <div class="expense-toolbar">
+    <div class="expense-toolbar-left">
+      <span style="font-size:12px;color:var(--mu);font-weight:600">Organizar por</span>
+      <select id="expense-sort" class="sort-select" onchange="setExpenseSort(this.value)">
+        <option value="manual">Ordem manual</option>
+        <option value="az">Nome: A → Z</option>
+        <option value="za">Nome: Z → A</option>
+        <option value="maior">Valor: maior → menor</option>
+        <option value="menor">Valor: menor → maior</option>
+      </select>
+      <button class="btn btn-sm" onclick="applyCurrentSort()">↕ Reordenar agora</button>
+    </div>
+    <div class="expense-toolbar-right">
+      <span class="manual-hint" id="expense-drag-hint">Use <strong>⋮⋮</strong> para arrastar e reorganizar.</span>
+    </div>
   </div>
 
   <!-- Categorias e listas -->
@@ -789,6 +845,7 @@ let state = {
     {id:14,name:'MEI',                cat:'obrigacoes', val:0,  icon:'🏢'},
   ],
   perfil: 'conservador',
+  expenseSort: 'manual',
   nextId: 15
 };
 
@@ -870,6 +927,39 @@ function getRenda() {
 /* ═══════════════════════════════════════
    DESPESAS — RENDER
 ═══════════════════════════════════════ */
+function getSortedExpenses(items) {
+  const list = [...items];
+  const mode = state.expenseSort || 'manual';
+  if (mode === 'az') return list.sort((a,b)=>a.name.localeCompare(b.name,'pt-BR',{sensitivity:'base'}));
+  if (mode === 'za') return list.sort((a,b)=>b.name.localeCompare(a.name,'pt-BR',{sensitivity:'base'}));
+  if (mode === 'maior') return list.sort((a,b)=>(b.val||0)-(a.val||0) || a.name.localeCompare(b.name,'pt-BR'));
+  if (mode === 'menor') return list.sort((a,b)=>(a.val||0)-(b.val||0) || a.name.localeCompare(b.name,'pt-BR'));
+  return list;
+}
+
+function setExpenseSort(mode) {
+  state.expenseSort = mode;
+  renderExpenses();
+  salvarSilencioso();
+}
+
+function applyCurrentSort() {
+  const mode = state.expenseSort || 'manual';
+  if (mode === 'manual') {
+    showToast('A ordem manual é alterada arrastando os itens.');
+    return;
+  }
+  const catOrder = Object.keys(CATS);
+  const sorted = [];
+  catOrder.forEach(cat => {
+    sorted.push(...getSortedExpenses(state.expenses.filter(e=>e.cat===cat)));
+  });
+  state.expenses = sorted;
+  renderExpenses();
+  salvarSilencioso();
+  showToast('↕ Lista reordenada!');
+}
+
 function renderExpenses() {
   const container = document.getElementById('expense-categories');
   const grouped = {};
@@ -879,19 +969,25 @@ function renderExpenses() {
   });
   let html = '';
   Object.keys(CATS).forEach(cat => {
-    const items = grouped[cat] || [];
+    const items = getSortedExpenses(grouped[cat] || []);
     if (!items.length) return;
     const total = items.reduce((s,i) => s+i.val, 0);
-    html += `<div style="margin-bottom:16px">
+    html += `<div style="margin-bottom:16px" data-category="${cat}">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
         <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--di)">${CATS[cat].label}</div>
         <div style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;color:${CATS[cat].color}">${fmt(total)}</div>
       </div>
-      <div class="expense-list">`;
+      <div class="expense-list" data-category="${cat}">`;
     items.forEach(exp => {
-      html += `<div class="expense-item" id="exp-${exp.id}">
+      html += `<div class="expense-item" id="exp-${exp.id}" data-id="${exp.id}" data-category="${exp.cat}" draggable="${state.expenseSort==='manual'}"
+        ondragstart="expenseDragStart(event,${exp.id})"
+        ondragover="expenseDragOver(event,${exp.id})"
+        ondragleave="expenseDragLeave(event)"
+        ondrop="expenseDrop(event,${exp.id})"
+        ondragend="expenseDragEnd(event)">
+        <div class="drag-handle" title="Arrastar para reorganizar" aria-label="Arrastar">⋮⋮</div>
         <div class="expense-icon" style="background:${CATS[exp.cat].bg}">${exp.icon}</div>
-        <input class="expense-name-input" type="text" value="${exp.name}" placeholder="Nome do gasto"
+        <input class="expense-name-input" type="text" value="${escapeHtml(exp.name)}" placeholder="Nome do gasto"
           onchange="updateExpName(${exp.id},this.value)">
         <select class="cat-select" onchange="updateExpCat(${exp.id},this.value)">
           ${Object.keys(CATS).map(c=>`<option value="${c}" ${c===exp.cat?'selected':''}>${CATS[c].label}</option>`).join('')}
@@ -909,13 +1005,91 @@ function renderExpenses() {
   container.innerHTML = html;
   const total = state.expenses.reduce((s,e) => s+e.val, 0);
   document.getElementById('total-desp').textContent = fmt(total);
+  const sortEl = document.getElementById('expense-sort');
+  if (sortEl) sortEl.value = state.expenseSort || 'manual';
+  const hint = document.getElementById('expense-drag-hint');
+  if (hint) hint.innerHTML = state.expenseSort === 'manual'
+    ? 'Use <strong>⋮⋮</strong> para arrastar e reorganizar.'
+    : 'Selecione <strong>Ordem manual</strong> para arrastar.';
 }
 
-function updateExpName(id, v) { state.expenses.find(e=>e.id===id).name = v; }
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+    .replaceAll('"','&quot;').replaceAll("'",'&#039;');
+}
+
+let draggedExpenseId = null;
+
+function expenseDragStart(event, id) {
+  if (state.expenseSort !== 'manual') { event.preventDefault(); return; }
+  draggedExpenseId = id;
+  event.dataTransfer.effectAllowed = 'move';
+  event.dataTransfer.setData('text/plain', String(id));
+  requestAnimationFrame(()=>event.currentTarget.classList.add('dragging'));
+}
+
+function expenseDragOver(event, targetId) {
+  if (state.expenseSort !== 'manual' || draggedExpenseId === targetId) return;
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'move';
+  const row = event.currentTarget;
+  const rect = row.getBoundingClientRect();
+  const before = event.clientY < rect.top + rect.height/2;
+  row.classList.remove('drag-over-before','drag-over-after');
+  row.classList.add('drag-over', before ? 'drag-over-before' : 'drag-over-after');
+  row.dataset.dropPosition = before ? 'before' : 'after';
+}
+
+function expenseDragLeave(event) {
+  event.currentTarget.classList.remove('drag-over','drag-over-before','drag-over-after');
+  delete event.currentTarget.dataset.dropPosition;
+}
+
+function expenseDrop(event, targetId) {
+  event.preventDefault();
+  const targetEl = event.currentTarget;
+  const position = targetEl.dataset.dropPosition || 'before';
+  const sourceId = draggedExpenseId || Number(event.dataTransfer.getData('text/plain'));
+  if (!sourceId || sourceId === targetId) return expenseDragEnd(event);
+
+  const sourceIndex = state.expenses.findIndex(e=>e.id===sourceId);
+  const targetIndexOriginal = state.expenses.findIndex(e=>e.id===targetId);
+  if (sourceIndex < 0 || targetIndexOriginal < 0) return expenseDragEnd(event);
+
+  const [moved] = state.expenses.splice(sourceIndex,1);
+  const target = state.expenses.find(e=>e.id===targetId);
+  moved.cat = target.cat;
+  moved.icon = ICONS[target.cat] || moved.icon || '📦';
+
+  let targetIndex = state.expenses.findIndex(e=>e.id===targetId);
+  if (position === 'after') targetIndex += 1;
+  state.expenses.splice(targetIndex,0,moved);
+
+  expenseDragEnd(event);
+  renderExpenses();
+  calcular();
+  salvarSilencioso();
+  showToast('↕ Ordem atualizada!');
+}
+
+function expenseDragEnd(event) {
+  draggedExpenseId = null;
+  document.querySelectorAll('.expense-item').forEach(el=>{
+    el.classList.remove('dragging','drag-over','drag-over-before','drag-over-after');
+    delete el.dataset.dropPosition;
+  });
+}
+
+function updateExpName(id, v) {
+  state.expenses.find(e=>e.id===id).name = v;
+  if (state.expenseSort !== 'manual') renderExpenses();
+  salvarSilencioso();
+}
 function updateExpCat(id, v) {
   const exp = state.expenses.find(e=>e.id===id);
   exp.cat = v; exp.icon = ICONS[v]||'📦';
-  renderExpenses(); calcular();
+  renderExpenses(); calcular(); salvarSilencioso();
 }
 function updateExpVal(id, v) {
   state.expenses.find(e=>e.id===id).val = parseFloat(v)||0;
@@ -925,14 +1099,16 @@ function updateExpVal(id, v) {
 }
 function delExpense(id) {
   state.expenses = state.expenses.filter(e=>e.id!==id);
-  renderExpenses(); calcular();
+  renderExpenses(); calcular(); salvarSilencioso();
 }
 function addExpense() {
   state.expenses.push({id:state.nextId++,name:'Nova despesa',cat:'outros',val:0,icon:'📦'});
+  state.expenseSort = 'manual';
   renderExpenses();
-  // focus no novo item
-  const last = document.querySelector('.expense-item:last-child .expense-name-input');
-  if (last) { last.focus(); last.select(); }
+  salvarSilencioso();
+  const el = document.getElementById(`exp-${state.nextId-1}`);
+  const input = el?.querySelector('.expense-name-input');
+  if (input) { input.focus(); input.select(); }
 }
 
 /* ═══════════════════════════════════════
@@ -1275,6 +1451,23 @@ function resetAll() {
 }
 
 /* SALVAR/CARREGAR localStorage */
+function salvarSilencioso() {
+  const data = {
+    sal1:document.getElementById('sal1').value,
+    sal2:document.getElementById('sal2').value,
+    sal3:document.getElementById('sal3').value,
+    extra:document.getElementById('extra').value,
+    ticket:document.getElementById('ticket').value,
+    outras:document.getElementById('outras').value,
+    dizimoPct:document.getElementById('dizimo-pct').value,
+    dizimoAtual:document.getElementById('dizimo-atual').value,
+    expenses: state.expenses,
+    expenseSort: state.expenseSort,
+    nextId: state.nextId
+  };
+  localStorage.setItem('painelfin_data', JSON.stringify(data));
+}
+
 function salvar() {
   const data = {
     sal1:document.getElementById('sal1').value,
@@ -1286,6 +1479,7 @@ function salvar() {
     dizimoPct:document.getElementById('dizimo-pct').value,
     dizimoAtual:document.getElementById('dizimo-atual').value,
     expenses: state.expenses,
+    expenseSort: state.expenseSort,
     nextId: state.nextId
   };
   localStorage.setItem('painelfin_data', JSON.stringify(data));
@@ -1303,6 +1497,7 @@ function carregar() {
     if (d.dizimoPct)   document.getElementById('dizimo-pct').value   = d.dizimoPct;
     if (d.dizimoAtual) document.getElementById('dizimo-atual').value = d.dizimoAtual;
     if (d.expenses)    state.expenses = d.expenses;
+    if (d.expenseSort) state.expenseSort = d.expenseSort;
     if (d.nextId)      state.nextId = d.nextId;
     renderExpenses(); calcular();
     showToast('✅ Dados carregados!');
